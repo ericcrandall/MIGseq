@@ -1,0 +1,36 @@
+---
+title: "Setting Up For MIGseq"
+output: html_notebook
+---
+
+This notebook will document the installations and other steps I used to set up both Treebeard and Khaleesi (plus my work computer for some cases) to analyze MIGseq data (Suyama et al. 2015).
+
+# Install Stacks
+```{unix}
+#downloaded with curl from http://catchenlab.life.illinois.edu/stacks/source/stacks-2.4.tar.gz
+
+tar xfvz stacks-2.4.tar.gz
+
+# Based on running ./configure, Neither Khaleesi nor Treebeard have a high enough version of gcc. However, I figured out that they do, if you:
+
+scl enable devtoolset-8 bash
+gcc --version
+
+#gcc (GCC) 8.2.1 20180905 (Red Hat 8.2.1-3)
+#Copyright (C) 2018 Free Software Foundation, Inc.
+#This is free software; see the source for copying conditions.  There is NO
+#warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+./configure #worked!
+
+make -j 8 # use 8 threads to make
+
+sudo make install # it all totally worked!
+
+```
+
+Install homebrew
+Upgrade R on laptop
+Install fastx-toolkit
+Install tagdust
+
+
