@@ -1,0 +1,12 @@
+PASS	Basic Statistics	pisoch-11-01_S1_L001_R2_001.fastq
+FAIL	Per base sequence quality	pisoch-11-01_S1_L001_R2_001.fastq
+FAIL	Per tile sequence quality	pisoch-11-01_S1_L001_R2_001.fastq
+PASS	Per sequence quality scores	pisoch-11-01_S1_L001_R2_001.fastq
+FAIL	Per base sequence content	pisoch-11-01_S1_L001_R2_001.fastq
+WARN	Per sequence GC content	pisoch-11-01_S1_L001_R2_001.fastq
+PASS	Per base N content	pisoch-11-01_S1_L001_R2_001.fastq
+PASS	Sequence Length Distribution	pisoch-11-01_S1_L001_R2_001.fastq
+FAIL	Sequence Duplication Levels	pisoch-11-01_S1_L001_R2_001.fastq
+FAIL	Overrepresented sequences	pisoch-11-01_S1_L001_R2_001.fastq
+FAIL	Adapter Content	pisoch-11-01_S1_L001_R2_001.fastq
+WARN	Kmer Content	pisoch-11-01_S1_L001_R2_001.fastq

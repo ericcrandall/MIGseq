@@ -28,9 +28,279 @@ sudo make install # it all totally worked!
 
 ```
 
-Install homebrew
-Upgrade R on laptop
-Install fastx-toolkit
-Install tagdust
+# Install Fastx-Toolkit
+```{unix}
+
+#Following these instructions:
+#  http://hannonlab.cshl.edu/fastx_toolkit/install_centos.txt
+
+# First install libgtextutils
+wget https://github.com/agordon/libgtextutils/releases/download/0.7/libgtextutils-0.7.tar.gz
+
+gunzip libgtextutils-0.7.tar.gz 
+
+tar -xf libgtextutils-0.7.tar 
+
+cd libgtextutils-0.7
+./configure
+make
+sudo make install
+cd ..
 
 
+
+# Install fastx-toolkit
+
+wget https://github.com/agordon/fastx_toolkit/releases/download/0.0.14/fastx_toolkit-0.0.14.tar.bz2
+
+tar -xf fastx_toolkit-0.0.14.tarz.bz2
+
+cd fastx_toolkit-0.0.14
+
+./configure
+
+#fails at this point. Found help here: http://hannonlab.cshl.edu/fastx_toolkit/pkg_config_email.txt
+# It is not finding the gtextutils package that I installed above
+
+export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH
+
+
+
+make
+
+sudo make install
+ 
+```
+
+# Install Tagdust
+
+```{unix}
+wget https://sourceforge.net/projects/tagdust/files/tagdust-2.33.tar.gz/download
+gunzip download.tar.gz
+tar -xvf download.tar
+cd tagdust-2.33
+./configure
+make
+sudo make install
+
+
+```
+
+# Sort sequences by species
+
+I downloaded the sequences from Basespace and they are sitting in a folder on my work computer. I need to sort them into different folders by species
+
+```{unix}
+
+#!/bin/bash
+
+find . -type f -name "pisoch*" -exec cp {} /Users/cran5048/Data/053119/pisoch \;
+
+find . -type f -name "semcar*" -exec cp {} /Users/cran5048/Data/053119/semcar \;
+
+find . -type f -name "tegfun*" -exec cp {} /Users/cran5048/Data/053119/tegfun \;
+
+find . -type f -name "embjac*" -exec cp {} /Users/cran5048/Data/053119/embjac \;
+
+```
+
+
+# Copy them up to Khaleesi
+
+```{unix}
+
+scp -r pisoch/ khaleesi:/projects/crandall/pisoch
+
+scp -r semcar/ khaleesi:/projects/crandall/semcar
+scp -r tegfun/ khaleesi:/projects/crandall/tegfun
+scp -r embjac/ khaleesi:/projects/crandall/embjac
+
+```
+
+# FastQC
+
+Here are some images from pisoch_11-01 Read 2
+
+![Per Base Quality](./fastqc/pisoch-11-01_S1_L001_R2_001_fastqc/images/per_base_quality.png)
+The adapters start to creep in around 30bp and are 100% of the sequences at 80bp
+
+![Adapter Content](./fastqc/pisoch-11-01_S1_L001_R2_001_fastqc/images/adapter_content.png)
+
+And you can clearly see the microsatellite content at the beginning of the read:
+
+![per base sequence content](./fastqc/pisoch-11-01_S1_L001_R2_001_fastqc/images/per_base_sequence_content.png)
+
+# Trim the msat from read 2
+Following Suyama et al. I use `fastx_timmer` to trim off the first 14 bases from Read 2. - fastq_trimmer.sh, run from the `original` directory
+
+```{unix}
+
+
+#trim the first 14 bases (the msat + anchor sequences of PCR1 primers) from Read 2, and the last 14 bases from Read 1
+for i in *R2*.fastq
+
+        do
+          	cat $i | fastx_trimmer -Q33 -f 15 -o ../2trimmed/$(basename $i .fastq)_trim.fastq
+        done
+
+for i in *R1*.fastq
+        do
+          	cat $i | fastx_trimmer -Q33 -t 14 -o ../2trimmed/$(basename $i .fastq)_trim.fastq
+
+
+
+
+```
+
+# Quality filter
+
+Trim bases less than Q30, and remove sequences with less than 20 percent at Q30. I am using a 50% lower threshold than Suyama, because my reads were twice as long (150bp vs 75bp).
+
+
+fastq_filter.sh
+```{unix}
+for i in *.fastq
+
+        do
+          	cat $i | fastq_quality_filter -Q33 -q 30 -p 20 -o ../3filtered/$(basename $i .fastq)_filter.fastq
+        done
+```
+
+# Trim the sequence primers
+
+Need to trim the Read 2 sequencing primer from Read 1 and the Read 1 sequencing primer from Read 2.
+
+trim_seq_primers.sh
+```{unix}
+#!/bin/bash
+
+#tagdust command: -dust 100 is default, not sure what it is referring to.
+# -1 R:N refers to a hidden markov model for a single read (as opposed to more complex architectures)
+for i in *R1*.fastq
+
+        do
+          	tagdust -ref /projects/crandall/MIGseq/Read2Seq.txt -dust 100 -1 R:N $i  -o ../dusted/$(basename $i .fastq)_dust
+        done
+
+
+for i in *R2*.fastq
+
+        do
+          	tagdust -ref /projects/crandall/MIGseq/Read1Seq.txt -dust 100 -1 R:N $i -o ../dusted/$(basename $i .fastq)_dust
+        done
+```
+
+
+# Pipeline
+
+A pipeline to roll all of this together and run on the other species.
+qc_pipeline.sh
+```{unix}
+#!/bin/bash
+
+#create directory structure
+mkdir 1original
+mkdir 2trimmed
+mkdir 3filtered
+mkdir 4dusted
+mkdir 5final
+
+#move everything into original
+mv *.fastq ./1original
+
+#Trim
+echo "Running fastx_trimmer to remove msat bases from read 2"
+cd 1original
+../../fastq_trim.sh
+#copy over R1 reads that weren't trimmed
+cp *R1*.fastq ../2trimmed
+cd ..
+
+#Filter
+echo "Running fastq_quality_filter to trim low quality bases and remove low quality reads"
+cd 2trimmed
+../../fastq_filter.sh
+cd ..
+
+#Tagdust - remove sequencing primers and poly A sequences
+echo "Running Tagdust to remove sequencing primers and low complexity reads"
+cd 3filtered
+../../seq_primer_trim.sh
+cd ..
+
+# Concatenate the read 1 and read 2 together for each individual (as suggested by Suyama et al. 2015)
+echo "Concatenate read 1 and read 2 and rename to just the sample name"
+#rename to just the individual identifier for input into stacks
+cd 4dusted
+#move the extraneous files out of the way
+mkdir tagdust_logs
+mv *logfile* ./tagdust_logs
+mkdir unextracted
+mv *un.fq ./unextracted
+#this for loop finds all read 1s, takes the sample name (delimited by -) and
+#concatenates the two files with this prefix, placing the resulting file, named by the sample name, in the final directory
+for filename in *R1*dust.fq 
+    do
+      prefix=$(echo $filename | sed 's/^\([a-z]*-[0-9]*-[0-9]*\).*/\1/')
+      echo "now concatenating $prefix"
+      cat $prefix* > ../5final/$prefix.fq
+    done
+cd ..
+
+    
+```
+
+# Run Stacks
+
+I am going to run the denovo pipeline using the parameters suggested by Suyama. The command line for that for Tegula funebralis looks like this:
+
+```{unix}
+[cran5048@khaleesi tegfun]$ denovo_map.pl --samples ./5final --popmap tegfun_popmap.txt -o ./6stacks -T 5 -M 2 -m 20 -n 4 -r 0.5 -X "ustacks: -d" -d
+Parsed population map: 24 files in 2 populations and 1 group.
+Found 24 sample file(s).
+
+Indentifying unique stacks...
+  /usr/local/bin/ustacks -t fastq -f ./5final/tegfun-19-01.fq -o ./6stacks -i 1 -m 20 -p 5 -M 2  -d
+  /usr/local/bin/ustacks -t fastq -f ./5final/tegfun-19-02.fq -o ./6stacks -i 2 -m 20 -p 5 -M 2  -d
+  /usr/local/bin/ustacks -t fastq -f ./5final/tegfun-19-03.fq -o ./6stacks -i 3 -m 20 -p 5 -M 2  -d
+  /usr/local/bin/ustacks -t fastq -f ./5final/tegfun-19-04.fq -o ./6stacks -i 4 -m 20 -p 5 -M 2  -d
+  /usr/local/bin/ustacks -t fastq -f ./5final/tegfun-19-05.fq -o ./6stacks -i 5 -m 20 -p 5 -M 2  -d
+  /usr/local/bin/ustacks -t fastq -f ./5final/tegfun-19-06.fq -o ./6stacks -i 6 -m 20 -p 5 -M 2  -d
+  /usr/local/bin/ustacks -t fastq -f ./5final/tegfun-19-07.fq -o ./6stacks -i 7 -m 20 -p 5 -M 2  -d
+  /usr/local/bin/ustacks -t fastq -f ./5final/tegfun-19-08.fq -o ./6stacks -i 8 -m 20 -p 5 -M 2  -d
+  /usr/local/bin/ustacks -t fastq -f ./5final/tegfun-19-09.fq -o ./6stacks -i 9 -m 20 -p 5 -M 2  -d
+  /usr/local/bin/ustacks -t fastq -f ./5final/tegfun-19-10.fq -o ./6stacks -i 10 -m 20 -p 5 -M 2  -d
+  /usr/local/bin/ustacks -t fastq -f ./5final/tegfun-19-11.fq -o ./6stacks -i 11 -m 20 -p 5 -M 2  -d
+  /usr/local/bin/ustacks -t fastq -f ./5final/tegfun-19-12.fq -o ./6stacks -i 12 -m 20 -p 5 -M 2  -d
+  /usr/local/bin/ustacks -t fastq -f ./5final/tegfun-83-01.fq -o ./6stacks -i 13 -m 20 -p 5 -M 2  -d
+  /usr/local/bin/ustacks -t fastq -f ./5final/tegfun-83-02.fq -o ./6stacks -i 14 -m 20 -p 5 -M 2  -d
+  /usr/local/bin/ustacks -t fastq -f ./5final/tegfun-83-03.fq -o ./6stacks -i 15 -m 20 -p 5 -M 2  -d
+  /usr/local/bin/ustacks -t fastq -f ./5final/tegfun-83-04.fq -o ./6stacks -i 16 -m 20 -p 5 -M 2  -d
+  /usr/local/bin/ustacks -t fastq -f ./5final/tegfun-83-05.fq -o ./6stacks -i 17 -m 20 -p 5 -M 2  -d
+  /usr/local/bin/ustacks -t fastq -f ./5final/tegfun-83-06.fq -o ./6stacks -i 18 -m 20 -p 5 -M 2  -d
+  /usr/local/bin/ustacks -t fastq -f ./5final/tegfun-83-07.fq -o ./6stacks -i 19 -m 20 -p 5 -M 2  -d
+  /usr/local/bin/ustacks -t fastq -f ./5final/tegfun-83-08.fq -o ./6stacks -i 20 -m 20 -p 5 -M 2  -d
+  /usr/local/bin/ustacks -t fastq -f ./5final/tegfun-83-09.fq -o ./6stacks -i 21 -m 20 -p 5 -M 2  -d
+  /usr/local/bin/ustacks -t fastq -f ./5final/tegfun-83-10.fq -o ./6stacks -i 22 -m 20 -p 5 -M 2  -d
+  /usr/local/bin/ustacks -t fastq -f ./5final/tegfun-83-11.fq -o ./6stacks -i 23 -m 20 -p 5 -M 2  -d
+  /usr/local/bin/ustacks -t fastq -f ./5final/tegfun-83-12.fq -o ./6stacks -i 24 -m 20 -p 5 -M 2  -d
+
+Depths of Coverage for Processed Samples:
+
+Generating catalog...
+  /usr/local/bin/cstacks -P ./6stacks -M tegfun_popmap.txt -p 5 -n 4
+
+Matching samples to the catalog...
+  /usr/local/bin/sstacks -P ./6stacks -M tegfun_popmap.txt -p 5
+
+Sorting reads by RAD locus...
+  /usr/local/bin/tsv2bam -P ./6stacks  -M tegfun_popmap.txt -t 5
+
+Calling variants, genotypes and haplotypes...
+  /usr/local/bin/gstacks -P ./6stacks -M tegfun_popmap.txt -t 5
+
+Calculating population-level summary statistics
+  /usr/local/bin/populations -P ./6stacks -M tegfun_popmap.txt -t 5 --min-samples-per-pop 0.5
+
+denovo_map.pl is done.
+```
