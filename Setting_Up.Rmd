@@ -131,7 +131,7 @@ And you can clearly see the microsatellite content at the beginning of the read:
 ![per base sequence content](./fastqc/pisoch-11-01_S1_L001_R2_001_fastqc/images/per_base_sequence_content.png)
 
 # Trim the msat from read 2
-Following Suyama et al. I use `fastx_timmer` to trim off the first 14 bases from Read 2. - fastq_trimmer.sh, run from the `original` directory
+Following Suyama et al. I use `fastx_trimmer` to trim off the first 14 bases from Read 2. - fastq_trimmer.sh, run from the `original` directory
 
 ```{unix}
 
@@ -154,7 +154,7 @@ for i in *R1*.fastq
 
 # Quality filter
 
-Trim bases less than Q30, and remove sequences with less than 20 percent at Q30. I am using a 50% lower threshold than Suyama, because my reads were twice as long (150bp vs 75bp).
+Remove sequences with less than 20 percent at Q30. I am using a 50% lower threshold than Suyama, because my reads were twice as long (150bp vs 75bp).
 
 
 fastq_filter.sh
@@ -250,6 +250,13 @@ cd ..
     
 ```
 
+Code to restart pipeline
+```{unix}
+mv 1original/* ./
+rm -r */
+../qc_pipeline.sh
+```
+
 # Run Stacks
 
 I am going to run the denovo pipeline using the parameters suggested by Suyama. The command line for that for Tegula funebralis looks like this:
@@ -303,4 +310,14 @@ Calculating population-level summary statistics
   /usr/local/bin/populations -P ./6stacks -M tegfun_popmap.txt -t 5 --min-samples-per-pop 0.5
 
 denovo_map.pl is done.
+```
+
+Had to clean semcar data of Ns
+```{unix}
+process_shortreads -p ./5final -o ./5.5final -c
+```
+
+Rerun `populations` for each, calculating Fst
+```{unix}
+ populations -P ./ -t 5 -M ../tegfun_popmap.txt -p 2 -r 0.75 -H --hwe --fstats --fst_correction 'p_value' --fasta-loci --fasta-samples --fasta-samples-raw --genepop   --phylip-var --structure --vcf
 ```
