@@ -1,0 +1,45 @@
+##fileformat=VCFv4.2
+##fileDate=20190617
+##source="Stacks v2.4"
+##INFO=<ID=AD,Number=R,Type=Integer,Description="Total Depth for Each Allele">
+##INFO=<ID=AF,Number=A,Type=Float,Description="Allele Frequency">
+##INFO=<ID=DP,Number=1,Type=Integer,Description="Total Depth">
+##INFO=<ID=NS,Number=1,Type=Integer,Description="Number of Samples With Data">
+##FORMAT=<ID=AD,Number=R,Type=Integer,Description="Allele Depth">
+##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Read Depth">
+##FORMAT=<ID=HQ,Number=2,Type=Integer,Description="Haplotype Quality">
+##FORMAT=<ID=GL,Number=G,Type=Float,Description="Genotype Likelihood">
+##FORMAT=<ID=GQ,Number=1,Type=Integer,Description="Genotype Quality">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##INFO=<ID=loc_strand,Number=1,Type=Character,Description="Genomic strand the corresponding Stacks locus aligns on">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	tegfun-19-01	tegfun-19-02	tegfun-19-03	tegfun-19-05	tegfun-19-07	tegfun-19-08	tegfun-19-09	tegfun-19-10	tegfun-19-11	tegfun-19-12	tegfun-83-01	tegfun-83-03	tegfun-83-05	tegfun-83-06	tegfun-83-07	tegfun-83-08	tegfun-83-09	tegfun-83-10	tegfun-83-11
+4	1	.	TCAA	TCAT,TCCT,ACAA,TTAT	.	PASS	snp_columns=4,15,36,80	GT	./.	0/3	1/1	0/1	0/0	1/1	0/0	0/0	0/0	./.	0/2	0/1	./.	0/2	0/0	./.	0/1	1/4	0/1
+6	1	.	A	G	.	PASS	snp_columns=9	GT	0/1	0/1	0/1	0/1	0/1	0/1	0/1	0/1	0/1	0/1	0/1	0/0	0/1	./.	0/1	0/1	0/1	0/1	0/1
+11	1	.	CC	AT	.	PASS	snp_columns=66,69	GT	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/1	0/0	0/0	0/0	0/0	0/0	./.	0/0	0/0	0/0	0/0
+89	1	.	C	A	.	PASS	snp_columns=87	GT	0/0	0/0	0/0	0/0	0/0	0/0	0/1	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0
+97	1	.	CGC	AGC,CAC,CGT	.	PASS	snp_columns=43,49,62	GT	0/0	0/1	0/0	0/2	0/0	0/0	0/0	0/0	0/3	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0
+111	1	.	G	A	.	PASS	snp_columns=33	GT	0/0	0/0	0/0	0/0	0/0	0/1	./.	0/0	0/0	0/0	./.	0/0	0/0	./.	0/0	0/0	0/0	0/0	0/0
+195	1	.	CCG	CCT,CTG,GCG	.	PASS	snp_columns=31,39,71	GT	0/0	0/0	0/2	0/0	0/0	0/0	./.	0/0	0/0	0/0	0/0	0/0	./.	0/1	0/0	0/0	./.	0/0	0/3
+197	1	.	TT	CT,TC	.	PASS	snp_columns=11,41	GT	0/0	0/0	0/0	0/0	0/0	0/1	./.	0/0	0/0	0/0	0/2	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0
+206	1	.	TA	TG	.	PASS	snp_columns=16,29	GT	0/0	0/0	0/0	0/0	0/1	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0
+220	1	.	A	G	.	PASS	snp_columns=31	GT	0/0	0/0	0/0	0/1	0/0	0/0	0/0	./.	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0
+255	1	.	C	T	.	PASS	snp_columns=51	GT	0/1	0/1	0/1	0/1	0/1	0/1	./.	0/1	0/1	./.	0/1	0/1	0/1	0/1	0/1	0/1	0/1	0/1	0/1
+439	1	.	C	G	.	PASS	snp_columns=6	GT	0/1	0/0	0/0	0/0	./.	./.	0/0	0/0	0/0	0/0	0/0	0/0	./.	0/0	0/0	0/0	0/0	./.	0/0
+512	1	.	A	G	.	PASS	snp_columns=61	GT	0/1	0/1	0/1	0/1	./.	0/1	0/1	0/1	0/1	0/1	0/1	./.	0/1	0/1	0/1	0/1	0/1	0/1	0/1
+537	1	.	TA	CA	.	PASS	snp_columns=64,77	GT	0/0	0/0	0/0	0/0	0/1	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0
+584	1	.	C	T	.	PASS	snp_columns=19	GT	0/1	0/1	0/1	./.	0/1	0/1	0/1	0/1	0/1	0/1	0/1	0/1	0/1	0/1	0/1	0/1	0/1	0/1	0/1
+588	1	.	A	G	.	PASS	snp_columns=61	GT	0/1	0/1	./.	0/1	0/1	0/1	0/1	0/1	0/1	./.	./.	0/1	0/1	0/1	0/1	0/1	./.	0/1	0/1
+656	1	.	A	G	.	PASS	snp_columns=13	GT	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/1	0/0	0/0	0/0	0/0	./.	./.	0/0
+658	1	.	C	T	.	PASS	snp_columns=74	GT	0/0	0/1	0/0	0/0	0/0	0/0	./.	0/0	0/0	./.	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0
+767	1	.	GCGA	ACGA,GCGT,GCTA,GTGA	.	PASS	snp_columns=50,63,69,84	GT	0/2	0/3	0/0	0/4	0/0	0/0	0/0	0/0	0/1	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0
+789	1	.	GA	GG,AA	.	PASS	snp_columns=13,81	GT	0/2	0/0	0/0	./.	0/0	0/0	./.	0/0	0/0	0/0	0/0	0/0	0/0	0/1	0/1	0/1	0/1	0/0	0/0
+814	1	.	A	G	.	PASS	snp_columns=42	GT	0/0	0/1	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0	./.	0/0
+865	1	.	CAG	GTC	.	PASS	snp_columns=84,85,86	GT	0/0	0/1	0/0	0/1	1/1	0/1	0/0	0/1	0/0	0/1	1/1	./.	0/0	0/0	./.	1/1	0/0	1/1	1/1
+874	1	.	T	C	.	PASS	snp_columns=75	GT	0/1	0/1	0/1	0/1	0/0	0/1	0/1	0/1	0/1	0/1	./.	0/1	0/1	0/1	0/1	0/1	0/1	0/1	./.
+881	1	.	CCCCCAG	CCCCGTC	.	PASS	snp_columns=68,71,74,77,78,79,80	GT	0/1	0/1	0/1	0/1	./.	0/1	0/0	0/1	0/1	0/1	0/1	0/1	0/1	0/1	0/1	0/1	0/1	0/1	0/1
+887	1	.	C	T	.	PASS	snp_columns=80	GT	0/1	./.	0/0	0/0	0/0	0/0	./.	0/0	0/0	0/0	0/0	./.	0/0	0/0	0/0	0/0	./.	0/0	0/1
+946	1	.	GGC	AGC,GGT,GTC	.	PASS	snp_columns=17,33,76	GT	0/0	0/1	0/1	0/2	0/1	0/1	./.	0/1	0/1	0/1	0/3	0/1	0/1	0/1	0/1	0/1	0/1	0/1	0/1
+984	1	.	A	G	.	PASS	snp_columns=74	GT	0/1	0/1	0/1	./.	0/1	0/1	0/1	0/1	0/1	0/1	0/1	0/1	0/1	0/1	0/1	0/1	0/1	0/1	0/1
+2486	1	.	A	G	.	PASS	snp_columns=58	GT	0/0	./.	0/0	0/0	./.	0/1	0/1	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0	0/0
+3941	1	.	A	G	.	PASS	snp_columns=89	GT	0/1	0/1	./.	0/1	./.	0/1	0/1	0/1	0/1	0/1	0/1	0/1	0/1	0/1	0/1	0/1	0/1	0/1	0/1
+3977	1	.	C	G	.	PASS	snp_columns=18	GT	0/0	0/0	0/0	./.	./.	0/0	0/0	0/0	0/0	0/0	0/1	0/0	0/0	0/0	0/0	0/0	0/0	0/0	./.
