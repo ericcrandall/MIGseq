@@ -1,0 +1,24 @@
+---
+title: "Migrate-n with MIGseq data"
+output: html_notebook
+---
+
+Here I will document what I did to set up migrate runs for MIGseq datasets.
+
+First, downloaded and installed [Migrate 4.4.3](https://peterbeerli.com/migrate-html5/download_version4/migrate-newest-src.tar.gz).
+
+[Manual](https://peterbeerli.com/migrate-html5/download_version4/migratedoc4.x.pdf).
+
+# Tegula funebralis
+
+I used Fasta2Genotype.py to convert MIGseq data for 20 decent looking loci into migrate-n format. Then I added in Charles' CO1 data, for a total of 21 loci.
+
+I chose a Ti:Tv ratio of 3.4 for CO1 (based on Charles' results) and 2 for the others (based on Seplyarskiy et al. 2012). No rate variation for this run.
+
+Otherwise used values from my "default" migrate parmfile.
+
+It's not currently working on version 4 - not sure why, will return to this later.
+
+Compiled the openmpi version of migrate 3 using `make mpis`.
+
+Run with `mpirun -np 21 migrate-n-mpi`

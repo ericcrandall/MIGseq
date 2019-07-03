@@ -1,7 +1,6 @@
 BlacklistedLoci
 6
 255
-512
 584
 588
 874

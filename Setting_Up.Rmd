@@ -321,3 +321,18 @@ Rerun `populations` for each, calculating Fst
 ```{unix}
  populations -P ./ -t 5 -M ../tegfun_popmap.txt -p 2 -r 0.75 -H --hwe --fstats --fst_correction 'p_value' --fasta-loci --fasta-samples --fasta-samples-raw --genepop   --phylip-var --structure --vcf
 ```
+
+# Convert to Migrate Format
+
+I found [this handy script](./scripts/fasta2genotype/fasta2genotype.py) on the [Migrate forum](https://groups.google.com/forum/#!topic/migrate-support/IPRpWtePwus). 
+
+When debugging I found that I needed to replace `nextline = newfasta.next` method with: 
+
+```{python}
+nextline = next(newfasta, None)
+if(nextline == None):
+  break 
+nextline = nextline.strip()
+```
+
+I also had to remove all the sample names in brackets from the `populations.samples.fa` file using a regular expression search in bbedit. Also had to remove the top commented line.

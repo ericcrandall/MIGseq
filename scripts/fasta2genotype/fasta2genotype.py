@@ -402,7 +402,9 @@ def KeepLoci(fasta,whiteloci,keeploci):
                                 locinum = locinum.strip()
                                 if str(locinum) in whitelist:
                                         fout.write(line)
-                                        nextline = fin.next()
+                                        nextline = next(fin, None)
+                                        if nextline == None:
+                                        	break
                                         fout.write(nextline)
 
                 fout.close()
@@ -500,7 +502,10 @@ def Seqs (listfile, clipcutsite, cutsite1, cutsite2, checkbothends, CoverageCuto
                         indnum = re.sub(r'>CLocus_\w+_Sample_(\w+)_Locus_\w+_Allele_\w+', r'\1', line); indnum=indnum.strip()
                         locusnum = re.sub(r'>CLocus_(\w+)_Sample_\w+_Locus_\w+_Allele_\w+', r'\1', line); locusnum=locusnum.strip()
                         allelenum = re.sub(r'>CLocus_\w+_Sample_\w+_Locus_\w+_Allele_(\w+)', r'\1', line); allelenum=allelenum.strip()
-                        nextline = newfasta.next(); nextline = nextline.strip()
+                        nextline = next(newfasta, None)
+                        if(nextline == None):
+                        	break 
+                        nextline = nextline.strip()
                         skip = 0
                         # Clip off cut sites
                         if clipcutsite == 1 and checkbothends == 2:
@@ -551,6 +556,7 @@ def Seqs (listfile, clipcutsite, cutsite1, cutsite2, checkbothends, CoverageCuto
                                                                 seqsdict[indnum] = {locusnum:{allelenum:nextline}}
 
 	newfasta.close()
+	#print seqsdict
         return seqsdict
 
 
@@ -591,7 +597,10 @@ def SeqSitesCount(listfile, cutsite1, cutsite2, checkbothends):
         newfasta = open(listfile,"U")
         for i in newfasta:
                 locusnum = re.sub(r'>CLocus_(\w+)_Sample_\w+_Locus_\w+_Allele_\w+', r'\1', i); locusnum=locusnum.strip()
-                nextline = newfasta.next(); nextline = nextline.strip()
+                nextline = next(newfasta, None)
+                if(nextline == None):
+                	break 
+                nextline = nextline.strip()
                 skip = 0
                 if clipcutsite == 1 and checkbothends == 2:
                         if nextline[0:len(cutsite1)] == cutsite1 and nextline[(len(nextline)-len(cutsite2)):] == cutsite2:
@@ -801,7 +810,10 @@ if monomorphic_filter == 1:
 
         
 # Test functions
-# print seqsdict.values(); print popsdict.values(); print num_sites; print gene_copies; print num_pops
+#print seqsdict.values(); print popsdict.values(); print num_sites; print gene_copies; print num_pops
+#print sorted(seqsdict.iterkeys())
+
+
 
 
 
@@ -809,6 +821,7 @@ if monomorphic_filter == 1:
 # Output Migrate file
 def Fasta2Migrate(num_pops, popsdict, seqsdict, gene_copies, num_sites):
         print "Outputting migrate-n file..."
+        
         try:
                 OrderedLoci = []
                 par=""
@@ -816,7 +829,7 @@ def Fasta2Migrate(num_pops, popsdict, seqsdict, gene_copies, num_sites):
 
                 for key in sorted(num_sites.iterkeys()):
                         OrderedLoci.append(key)
-                        
+                
                 fout.write(str(num_pops) + '\t' + str(len(OrderedLoci)) + "\n")
                 for key in sorted(num_sites.iterkeys()):
                         fout.write("%s\t" % num_sites[key])
@@ -830,6 +843,7 @@ def Fasta2Migrate(num_pops, popsdict, seqsdict, gene_copies, num_sites):
                                 for x in sorted(seqsdict.iterkeys()): #Cycle through all seqs by individual
                                         if x in popsdict[k].keys(): #If that individual's in the population
                                                 if int(len(str(popsdict[k][x])))>9: print "Error, Ind ID > 9 characters"; exit(1)
+                                                print i; print seqsdict[x].keys()
                                                 if i not in seqsdict[x].keys(): #If individual doesn't have this locus, write ?s
                                                         ind = str(popsdict[k][x])
                                                         fout.write((ind+'a').ljust(10)); z=0
