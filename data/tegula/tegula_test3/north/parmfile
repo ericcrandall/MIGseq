@@ -142,7 +142,7 @@ weights=NO
 interleaved=NO
 fast-likelihood=NO
 inheritance-scalars={0.25000000000000000000, 1.00000000000000000000, 1.00000000000000000000, 1.00000000000000000000, 1.00000000000000000000, 1.00000000000000000000, 1.00000000000000000000, 1.00000000000000000000, 1.00000000000000000000, 1.00000000000000000000, 1.00000000000000000000, 1.00000000000000000000, 1.00000000000000000000, 1.00000000000000000000, 1.00000000000000000000, 1.00000000000000000000, 1.00000000000000000000, 1.00000000000000000000, 1.00000000000000000000, 1.00000000000000000000, 1.00000000000000000000}
-population-relabel={1}
+population-relabel={1 2}
 usertree=RANDOMTREE
 #
 ################################################################################
@@ -317,7 +317,7 @@ aic-modeltest=NO
 #         YES           calculate parameters through time
 #         binsize has to be in mutation units, with an average Theta=0.01 try 0.001
 #         If the interval is too fine the output will be very noisy
-mig-histogram=NO
+mig-histogram=MIGRATIONEVENTSONLY
 skyline=NO #needs mig-histogram=ALL:...
 #
 #
@@ -478,16 +478,16 @@ bayes-update=YES
 bayes-updatefreq=0.500000
 bayes-posteriorbins=1500 1500
 bayes-posteriormaxtype=TOTAL
-bayes-file=NO
-bayes-allfile=NO
+bayes-file=YES:bayesfile
+bayes-allfile=YES:bayesallfile
 bayes-proposals= THETA METROPOLIS-HASTINGS Sampler
 bayes-proposals= MIG SLICE Sampler
 bayes-priors= THETA WEXPPRIOR: 0.000010 0.010000 10.000000 1.000000 
-bayes-priors= MIG WEXPPRIOR: 0.000100 100000.000000 1000000.000000 100000.000000 
+bayes-priors= MIG WEXPPRIOR: 0.0100 1000000.000000 100000000.000000 1000000.000000 
 #
 long-chains=1
 long-inc=500
-long-sample=100000
+long-sample=10000
 burn-in=10000
 auto-tune=YES:0.440000
 #

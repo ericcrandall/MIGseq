@@ -22,3 +22,7 @@ It's not currently working on version 4 - not sure why, will return to this late
 Compiled the openmpi version of migrate 3 using `make mpis`.
 
 Run with `mpirun -np 21 migrate-n-mpi`
+
+This ended up crashing Treebeard and I ran each run on a single thread.
+
+Models: Full, North, South, panmixia, island
