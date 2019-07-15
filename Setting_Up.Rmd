@@ -131,21 +131,24 @@ And you can clearly see the microsatellite content at the beginning of the read:
 ![per base sequence content](./fastqc/pisoch-11-01_S1_L001_R2_001_fastqc/images/per_base_sequence_content.png)
 
 # Trim the msat from read 2
-Following Suyama et al. I use `fastx_trimmer` to trim off the first 14 bases from Read 2. - fastq_trimmer.sh, run from the `original` directory
+Following Suyama et al. I use `fastx_trimmer` to trim off the first 14 bases from Read 2. - fastq_trim.sh, run from the top directory
 
 ```{unix}
 
 
-#trim the first 14 bases (the msat + anchor sequences of PCR1 primers) from Read 2, and the last 14 bases from Read 1
+#trim the first 14 bases (the msat + anchor sequences of PCR1 primers) from Read 2, and the last 46 bases to leave a fragment of 90bp
+#trim 60 bases from the 3' end of read 1 to leave a fragment of 90bp
 for i in *R2*.fastq
 
-        do
-          	cat $i | fastx_trimmer -Q33 -f 15 -o ../2trimmed/$(basename $i .fastq)_trim.fastq
-        done
+	do 
+		cat $i | fastx_trimmer -Q33 -f 15 -o temp.fastq
+		cat temp.fastq | fastx_trimmer -Q33 -t 46 -o ../2trimmed/$(basename $i .fastq)_trim.fastq
+	done
 
 for i in *R1*.fastq
-        do
-          	cat $i | fastx_trimmer -Q33 -t 14 -o ../2trimmed/$(basename $i .fastq)_trim.fastq
+	do
+		cat $i | fastx_trimmer -Q33 -t 60 -o ../2trimmed/$(basename $i .fastq)_trim.fastq 
+	done
 
 
 
@@ -159,35 +162,41 @@ Remove sequences with less than 20 percent at Q30. I am using a 50% lower thresh
 
 fastq_filter.sh
 ```{unix}
+mkdir filter_logs
+
 for i in *.fastq
 
-        do
-          	cat $i | fastq_quality_filter -Q33 -q 30 -p 20 -o ../3filtered/$(basename $i .fastq)_filter.fastq
-        done
+	do 
+		cat $i | fastq_quality_filter -Q33 -q 30 -p 40 -o ../3filtered/$(basename $i .fastq)_filter.fastq > ./filter_logs/$(basename $i .fastq).txt
+	done 
+
 ```
 
 # Trim the sequence primers
 
 Need to trim the Read 2 sequencing primer from Read 1 and the Read 1 sequencing primer from Read 2.
 
-trim_seq_primers.sh
+seq_primer_trim.sh
 ```{unix}
 #!/bin/bash
 
 #tagdust command: -dust 100 is default, not sure what it is referring to.
 # -1 R:N refers to a hidden markov model for a single read (as opposed to more complex architectures)
+#!/bin/bash
+
 for i in *R1*.fastq
 
-        do
-          	tagdust -ref /projects/crandall/MIGseq/Read2Seq.txt -dust 100 -1 R:N $i  -o ../dusted/$(basename $i .fastq)_dust
-        done
+	do 
+		tagdust -ref /projects/crandall/MIGseq/Read2Seq.txt -dust 100 -1 R:N $i  -o ../4dusted/$(basename $i .fastq)_dust
+	done 
 
 
 for i in *R2*.fastq
 
-        do
-          	tagdust -ref /projects/crandall/MIGseq/Read1Seq.txt -dust 100 -1 R:N $i -o ../dusted/$(basename $i .fastq)_dust
-        done
+	do 
+		tagdust -ref /projects/crandall/MIGseq/Read1Seq.txt -dust 100 -1 R:N $i -o ../4dusted/$(basename $i .fastq)_dust
+	done 
+
 ```
 
 
@@ -203,17 +212,17 @@ mkdir 1original
 mkdir 2trimmed
 mkdir 3filtered
 mkdir 4dusted
-mkdir 5final
+mkdir 5concatenated
+mkdir 6preprocessed
+mkdir 7stacks
 
 #move everything into original
 mv *.fastq ./1original
 
 #Trim
-echo "Running fastx_trimmer to remove msat bases from read 2"
+echo "Running fastx_trimmer to remove 14 msat bases from read 2 and truncate all reads to 90bp"
 cd 1original
 ../../fastq_trim.sh
-#copy over R1 reads that weren't trimmed
-cp *R1*.fastq ../2trimmed
 cd ..
 
 #Filter
@@ -243,8 +252,14 @@ for filename in *R1*dust.fq
     do
       prefix=$(echo $filename | sed 's/^\([a-z]*-[0-9]*-[0-9]*\).*/\1/')
       echo "now concatenating $prefix"
-      cat $prefix* > ../5final/$prefix.fq
+      cat $prefix* > ../5concatenated/$prefix.fq
     done
+cd ..
+
+# remove sequences with Ns and zip them up
+echo "Running process_shortreads to remove reads with N and zip final files"
+process_shortreads -p ./5concatenated -o ./6preprocessed -c
+
 cd ..
 
     
